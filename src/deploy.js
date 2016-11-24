@@ -1,11 +1,13 @@
 (function(){
+  require("babel-polyfill")
   var path = require('path'),
       prompt = require('prompt'),
       build = require('./build.js').execute,
       fs = require('fs'),
       Q = require('q'),
+      co = require('co'),
       _ = require('lodash'),
-      s3sync = require('s3-sync-aws'),
+      oss = require('ali-oss'),
       readdirp = require('readdirp'),
       loginFile = path.join(process.cwd(), '.chcplogin');
 
@@ -60,50 +62,41 @@
     // console.log('Credentials: ', credentials);
     // console.log('Config: ', config);
     // console.log('Ignore: ', ignore);
+    // 
+    var uploader = oss({
+      accessKeyId: credentials.key,
+      accessKeySecret: credentials.secret,
+      region: 'oss-' + config.ossregion,
+      bucket: config.ossbucket,
+    })
 
     var files = readdirp({
       root: context.sourceDirectory,
       fileFilter: ignore
-    });
-
-    var uploader = s3sync({
-      key: credentials.key,
-      secret: credentials.secret,
-      region: config.s3region,
-      bucket: config.s3bucket,
-      prefix: config.s3prefix,
-      acl: 'public-read',
-      headers: {
-        CacheControl: 'no-cache, no-store, must-revalidate',
-        Expires: 0
-      },
-      concurrency: 20
     }).on('data', function(file) {
-      if (file.fresh) {
-        console.log("Updated " + file.fullPath + ' -> ' + file.url)
-      }
-    });
-
-    files.pipe(uploader);
-
-    console.log('Deploy started');
-    uploader.on('error', function(err) {
+      co(function* () {
+        var filename = config.ossprefix + file.path.replace(/\\/g,'/')
+        var res = yield uploader.put(filename, file.fullPath)
+        if (res.res.status == 200) {
+          console.log("Updated " + file.fullPath + ' -> ' + res.url)
+        } else {
+          console.error("unable to sync:", res.res)
+          executeDfd.reject();
+        }
+      }).catch(function (err) {
+        console.log(err);
+      })
+    }).on('error', function(err) {
       console.error("unable to sync:", err.stack);
       executeDfd.reject();
-    });
-    uploader.on('fail', function(err) {
+    }).on('fail', function(err) {
       console.error("unable to sync:", err);
       executeDfd.reject();
-    });
+    }).on('end', function() {
 
-    //uploader.on('progress', function() {
-    //  var progress = uploader.progressTotal - uploader.progressAmount;
-    //  console.log("progress", progress, uploader.progressTotal, uploader.progressAmount);
-    //});
-    uploader.on('end', function() {
-      console.log("Deploy done");
+      console.log("Deploy done")
       executeDfd.resolve();
-    });
+    })
     return executeDfd.promise;
   }
 })();

@@ -36,23 +36,29 @@ var name = {
   required: true
 };
 
-var s3bucket = {
-  description: 'Amazon S3 Bucket name (required for cordova-hcp deploy)',
+var ossbucket = {
+  description: 'Aliyun OSS Bucket name (required for cordova-hcp deploy)',
   pattern: /^[a-zA-Z\-0-9\.]+$/,
   message: 'Name must be only letters, numbers, or dashes'
 };
 
-var s3prefix = {
-  description: 'Path in S3 bucket (optional for cordova-hcp deploy)',
+var ossprefix = {
+  description: 'Path in OSS bucket (optional for cordova-hcp deploy)',
   pattern: /^[a-zA-Z\-\s0-9\.\/]+\/$/,
   message: 'Path must be only letters, numbers, spaces, forward slashes or dashes and must end with a forward slash'
 };
 
-var s3region = {
-  description: 'Amazon S3 region (required for cordova-hcp deploy)',
-  pattern: /^(us-east-1|us-west-2|us-west-1|eu-west-1|eu-central-1|ap-southeast-1|ap-southeast-2|ap-northeast-1|sa-east-1)$/,
-  'default': 'us-east-1',
-  message: 'Must be one of: us-east-1, us-west-2, us-west-1, eu-west-1, eu-central-1, ap-southeast-1, ap-southeast-2, ap-northeast-1, sa-east-1'
+var ossregion = {
+  description: 'OSS current data region (required for cordova-hcp deploy)',
+  pattern: /^(cn-hangzhou|cn-shanghai|cn-qingdao|cn-beijing|cn-shenzhen|cn-hongkong|us-west-1|ap-southeast-1)$/,
+  'default': 'cn-shanghai',
+  message: 'Must be one of: cn-hangzhou, cn-shanghai, cn-qingdao, cn-beijing, cn-shenzhen, cn-hongkong, us-west-1, ap-southeast-1'
+};
+
+var ossendpoint = {
+  description: 'OSS region domian or CDN domian. Do not add "/" at the end',
+  pattern: /^[a-zA-Z\-\s0-9\:\.\/]+\/$/,
+  message: 'Path must be only letters, numbers, spaces, forward slashes or dashes and must end with a forward slash'
 };
 
 var iosIdentifier = {
@@ -76,9 +82,10 @@ var update = {
 var schema = {
   properties: {
     name: name,
-    s3bucket: s3bucket,
-    s3prefix: s3prefix,
-    s3region: s3region,
+    ossbucket: ossbucket,
+    ossprefix: ossprefix,
+    ossregion: ossregion,
+    ossendpoint: ossendpoint,
     ios_identifier: iosIdentifier,
     android_identifier: androidIdentifier,
     update: update
@@ -113,28 +120,34 @@ function execute(context) {
 }
 
 function validateBucket(result) {
-  if (!result.s3bucket) {
-    return _lodash2['default'].omit(result, ['s3region', 's3bucket', 's3prefix']);
+  if (!result.ossbucket) {
+    return _lodash2['default'].omit(result, ['ossregion', 'ossbucket', 'ossprefix', 'ossendpoint']);
   }
 
   return result;
 }
 
 function getUrl(_ref) {
-  var region = _ref.s3region;
-  var bucket = _ref.s3bucket;
-  var path = _ref.s3prefix;
+  var region = _ref.ossregion;
+  var bucket = _ref.ossbucket;
+  var path = _ref.ossprefix;
+  var endpoint = _ref.ossendpoint;
 
   if (!bucket) {
     return (0, _utils.getInput)(_prompt2['default'], urlSchema);
   }
 
-  return { content_url: getContentUrl(region, bucket, path) };
+  return { content_url: getContentUrl(region, bucket, path, endpoint) };
 }
 
-function getContentUrl(region, bucket, path) {
-  var url = region === 'us-east-1' ? 's3.amazonaws.com' : 's3-' + region + '.amazonaws.com';
-  url = 'https://' + url + '/' + bucket;
+function getContentUrl(region, bucket, path, endpoint) {
+  var url = '';
+  if (endpoint) {
+    url = endpoint;
+  } else {
+    url = 'oss-' + region + '.aliyuncs.com';
+    url = 'https://' + url + '/' + bucket;
+  }
 
   if (path) {
     url += '/' + path;
@@ -151,3 +164,4 @@ function done(err) {
   console.log('If you wish to exclude files from being published, specify them in .chcpignore');
   console.log('Before you can push updates you need to run "cordova-hcp login" in project directory');
 }
+//# sourceMappingURL=init.js.map

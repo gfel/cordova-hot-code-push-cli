@@ -1,13 +1,15 @@
 'use strict';
 
 (function () {
+  require("babel-polyfill");
   var path = require('path'),
       prompt = require('prompt'),
       build = require('./build.js').execute,
       fs = require('fs'),
       Q = require('q'),
+      co = require('co'),
       _ = require('lodash'),
-      s3sync = require('s3-sync-aws'),
+      oss = require('ali-oss'),
       readdirp = require('readdirp'),
       loginFile = path.join(process.cwd(), '.chcplogin');
 
@@ -66,50 +68,57 @@
     // console.log('Credentials: ', credentials);
     // console.log('Config: ', config);
     // console.log('Ignore: ', ignore);
+    //
+    var uploader = oss({
+      accessKeyId: credentials.key,
+      accessKeySecret: credentials.secret,
+      region: 'oss-' + config.ossregion,
+      bucket: config.ossbucket
+    });
 
     var files = readdirp({
       root: context.sourceDirectory,
       fileFilter: ignore
-    });
-
-    var uploader = s3sync({
-      key: credentials.key,
-      secret: credentials.secret,
-      region: config.s3region,
-      bucket: config.s3bucket,
-      prefix: config.s3prefix,
-      acl: 'public-read',
-      headers: {
-        CacheControl: 'no-cache, no-store, must-revalidate',
-        Expires: 0
-      },
-      concurrency: 20
     }).on('data', function (file) {
-      if (file.fresh) {
-        console.log("Updated " + file.fullPath + ' -> ' + file.url);
-      }
-    });
+      co(regeneratorRuntime.mark(function callee$3$0() {
+        var filename, res;
+        return regeneratorRuntime.wrap(function callee$3$0$(context$4$0) {
+          while (1) switch (context$4$0.prev = context$4$0.next) {
+            case 0:
+              filename = config.ossprefix + file.path.replace(/\\/g, '/');
+              context$4$0.next = 3;
+              return uploader.put(filename, file.fullPath);
 
-    files.pipe(uploader);
+            case 3:
+              res = context$4$0.sent;
 
-    console.log('Deploy started');
-    uploader.on('error', function (err) {
+              if (res.res.status == 200) {
+                console.log("Updated " + file.fullPath + ' -> ' + res.url);
+              } else {
+                console.error("unable to sync:", res.res);
+                executeDfd.reject();
+              }
+
+            case 5:
+            case 'end':
+              return context$4$0.stop();
+          }
+        }, callee$3$0, this);
+      }))['catch'](function (err) {
+        console.log(err);
+      });
+    }).on('error', function (err) {
       console.error("unable to sync:", err.stack);
       executeDfd.reject();
-    });
-    uploader.on('fail', function (err) {
+    }).on('fail', function (err) {
       console.error("unable to sync:", err);
       executeDfd.reject();
-    });
+    }).on('end', function () {
 
-    //uploader.on('progress', function() {
-    //  var progress = uploader.progressTotal - uploader.progressAmount;
-    //  console.log("progress", progress, uploader.progressTotal, uploader.progressAmount);
-    //});
-    uploader.on('end', function () {
       console.log("Deploy done");
       executeDfd.resolve();
     });
     return executeDfd.promise;
   }
 })();
+//# sourceMappingURL=deploy.js.map

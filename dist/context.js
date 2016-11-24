@@ -59,3 +59,4 @@
     return _.trim(fileContent).split(/\n/);
   }
 })();
+//# sourceMappingURL=context.js.map

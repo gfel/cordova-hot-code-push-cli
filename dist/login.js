@@ -27,12 +27,12 @@ var loginFile = _path2['default'].join(process.cwd(), '.chcplogin');
 var schema = {
   properties: {
     key: {
-      description: 'Amazon Access Key Id',
-      message: 'You need to provide the Amazon Access Key Id',
+      description: 'Aliyun OSS Access Key Id',
+      message: 'You need to provide the Aliyun OSS Access Key Id',
       required: true
     },
     secret: {
-      description: 'Amazon Secret Access Key',
+      description: 'Aliyun OSS Secret Access Key',
       message: 'You need to provide the Secret Access Key',
       required: true
     }
@@ -78,3 +78,4 @@ function done(err) {
   console.log('You SHOULD add .chcplogin to your .gitignore');
   console.log('( echo \'.chcplogin\' >> .gitignore )');
 }
+//# sourceMappingURL=login.js.map
