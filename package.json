@@ -1,6 +1,6 @@
 {
   "name": "cordova-hot-code-push-cli-aliyun",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Cordova Hot Code Push CLI with Aliyun OSS",
   "preferGlobal": "true",
   "bin": {
