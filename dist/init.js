@@ -37,19 +37,19 @@ var name = {
 };
 
 var ossbucket = {
-  description: 'Aliyun OSS Bucket name (required for cordova-hcp deploy)',
+  description: 'Aliyun OSS Bucket name (required for cordova-hcp-oss deploy)',
   pattern: /^[a-zA-Z\-0-9\.]+$/,
   message: 'Name must be only letters, numbers, or dashes'
 };
 
 var ossprefix = {
-  description: 'Path in OSS bucket (optional for cordova-hcp deploy)',
+  description: 'Path in OSS bucket (optional for cordova-hcp-oss deploy)',
   pattern: /^[a-zA-Z\-\s0-9\.\/]+\/$/,
   message: 'Path must be only letters, numbers, spaces, forward slashes or dashes and must end with a forward slash'
 };
 
 var ossregion = {
-  description: 'OSS current data region (required for cordova-hcp deploy)',
+  description: 'OSS current data region (required for cordova-hcp-oss deploy)',
   pattern: /^(cn-hangzhou|cn-shanghai|cn-qingdao|cn-beijing|cn-shenzhen|cn-hongkong|us-west-1|ap-southeast-1)$/,
   'default': 'cn-shanghai',
   message: 'Must be one of: cn-hangzhou, cn-shanghai, cn-qingdao, cn-beijing, cn-shenzhen, cn-hongkong, us-west-1, ap-southeast-1'
@@ -95,7 +95,7 @@ var schema = {
 var urlSchema = {
   properties: {
     content_url: {
-      description: 'Enter full URL to directory where cordova-hcp build result will be uploaded',
+      description: 'Enter full URL to directory where cordova-hcp-oss build result will be uploaded',
       message: 'Must supply URL',
       required: true
     }
@@ -146,7 +146,7 @@ function getContentUrl(region, bucket, path, endpoint) {
     url = endpoint;
   } else {
     url = 'oss-' + region + '.aliyuncs.com';
-    url = 'https://' + url + '/' + bucket;
+    url = 'http://' + bucket + '.' + url;
   }
 
   if (path) {
@@ -162,6 +162,6 @@ function done(err) {
   }
   console.log('Project initialized and cordova-hcp.json file created.');
   console.log('If you wish to exclude files from being published, specify them in .chcpignore');
-  console.log('Before you can push updates you need to run "cordova-hcp login" in project directory');
+  console.log('Before you can push updates you need to run "cordova-hcp-oss login" in project directory');
 }
 //# sourceMappingURL=init.js.map

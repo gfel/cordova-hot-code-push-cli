@@ -39,11 +39,11 @@
       config = fs.readFileSync(context.defaultConfig, 'utf8');
       config = JSON.parse(config);
     } catch (e) {
-      console.log('Cannot parse cordova-hcp.json. Did you run cordova-hcp init?');
+      console.log('Cannot parse cordova-hcp-oss.json. Did you run cordova-hcp-oss init?');
       process.exit(0);
     }
     if (!config) {
-      console.log('You need to run "cordova-hcp init" before you can run "cordova-hcp login".');
+      console.log('You need to run "cordova-hcp-oss init" before you can run "cordova-hcp-oss login".');
       console.log('Both commands needs to be invoked in the root of the project directory.');
       process.exit(0);
     }
@@ -54,7 +54,7 @@
       console.log('Cannot parse .chcplogin: ', e);
     }
     if (!credentials) {
-      console.log('You need to run "cordova-hcp login" before you can run "cordova-hcp deploy".');
+      console.log('You need to run "cordova-hcp-oss login" before you can run "cordova-hcp-oss deploy".');
       process.exit(0);
     }
 

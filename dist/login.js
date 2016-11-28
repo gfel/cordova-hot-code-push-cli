@@ -58,12 +58,12 @@ function validateConfig() {
   try {
     config = _fs2['default'].readFileSync(configFile, 'utf8');
   } catch (e) {
-    console.log('Cannot parse cordova-hcp.json. Did you run cordova-hcp init?');
+    console.log('Cannot parse cordova-hcp.json. Did you run cordova-hcp-oss init?');
     process.exit(0);
   }
 
   if (!config) {
-    console.log('You need to run "cordova-hcp init" before you can run "cordova-hcp login".');
+    console.log('You need to run "cordova-hcp-oss init" before you can run "cordova-hcp-oss login".');
     console.log('Both commands needs to be invoked in the root of the project directory.');
     process.exit(0); // eslint-disable-line no-process-exit
   }

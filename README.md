@@ -26,22 +26,22 @@ Main features are:
 
 You can install CLI client using `npm install` (current stable 1.1.1):
 ```sh
-npm install -g cordova-hot-code-push-cli
+npm install -g cordova-hot-code-push-cli-aliyun
 ```
 
 It is also possible to install via repo url directly (__unstable__):
 ```sh
-npm install -g https://github.com/nordnet/cordova-hot-code-push-cli.git
+npm install -g https://github.com/gfel/cordova-hot-code-push-cli-aliyun.git
 ```
 
 ### How to use
 
 ```sh
-cordova-hcp <command>
+cordova-hcp-oss <command>
 ```
 
 Where `<command>` can be:
-- `init` - initialize project parameters, create default `cordova-hcp.json` file.
+- `init` - initialize project parameters, create default `cordova-hcp-oss.json` file.
 - `build` - build project files, generate `chcp.json` and `chcp.manifest` files in the `www` folder. Prepare for deployment.
 - `server` - run local server that is used for local development process.
 - `login` - create login credentials that are used for deployment of project files on the remote server.
@@ -57,17 +57,17 @@ TestProject/
   plugins/
   www/
 ```
-Then `cordova-hcp` commands should be executed in the `TestProject` folder.
+Then `cordova-hcp-oss` commands should be executed in the `TestProject` folder.
 
 ### Commands
 
 #### Init command
 
 ```sh
-cordova-hcp init
+cordova-hcp-oss init
 ```
 
-Initialization command for CLI client. Generates default application configuration file (`cordova-hcp.json`) in the projects root folder. This file is used later on for `build` and `deploy`.
+Initialization command for CLI client. Generates default application configuration file (`cordova-hcp-oss.json`) in the projects root folder. This file is used later on for `build` and `deploy`.
 
 When executed - you will be asked to fill in some project preferences from the command line:
 - `Project name` - your current project name. **Required**.
@@ -84,17 +84,17 @@ For example, execute `init` in your project root folder and fill preferences as 
 ```
 Running init
 Please provide: Enter project name (required):  TestProject
-Please provide: Aliyun OSS Bucket name (required for cordova-hcp deploy):  chcp-test
-Please provide: Aliyun OSS region (required for cordova-hcp deploy):  (oss-cn-shanghai) oss-cn-hangzhou
+Please provide: Aliyun OSS Bucket name (required for cordova-hcp-oss deploy):  chcp-test
+Please provide: Aliyun OSS region (required for cordova-hcp-oss deploy):  (oss-cn-shanghai) oss-cn-hangzhou
 Please provide: IOS app identifier:  id123456789
 Please provide: Android app identifier:  com.example.chcp.testproject
 Please provide: Update method (required):  (resume) start
-Project initialized and cordova-hcp.json file created.
+Project initialized and cordova-hcp-oss.json file created.
 If you wish to exclude files from being published, specify them in .chcpignore
-Before you can push updates you need to run "cordova-hcp login" in project directory
+Before you can push updates you need to run "cordova-hcp-oss login" in project directory
 ```
 
-As a result, content of the `cordova-hcp.json` file will be:
+As a result, content of the `cordova-hcp-oss.json` file will be:
 ```json
 {
   "name": "TestProject",
@@ -109,14 +109,14 @@ As a result, content of the `cordova-hcp.json` file will be:
 
 You can skip initialization for local development process when you execute
 ```sh
-cordova-hcp server
+cordova-hcp-oss server
 ```
 More details about `server` command can be found below.
 
 #### Build command
 
 ```sh
-cordova-hcp build [www_directory]
+cordova-hcp-oss build [www_directory]
 ```
 
 where:
@@ -139,7 +139,7 @@ More information about those configs can be found on [Cordova Hot Code Push plug
 #### Server command
 
 ```sh
-cordova-hcp server [www_directory]
+cordova-hcp-oss server [www_directory]
 ```
 
 where:
@@ -161,7 +161,7 @@ How it works:
 
 1. Launch server in the project root by executing:
   ```sh
-  cordova-hcp server
+  cordova-hcp-oss server
   ```
 
   As a result, you will see something like this:
@@ -170,8 +170,8 @@ How it works:
   Checking:  /Cordova/TestProject/www
   local_url http://localhost:31284
   Build 2015.09.07-10.12.25 created in /Cordova/TestProject/www
-  cordova-hcp local server available at: http://localhost:31284
-  cordova-hcp public server available at: https://19d5cfa2.ngrok.com
+  cordova-hcp-oss local server available at: http://localhost:31284
+  cordova-hcp-oss public server available at: https://19d5cfa2.ngrok.com
   ```
 
 2. Launch application on your emulators or test devices:
@@ -191,7 +191,7 @@ How it works:
   Should trigger reload for build: 2015.09.07-10.12.31
   ```
 
-  This means that `cordova-hcp` detected your changes, executed `build` command and sent notification via socket to the connected users.
+  This means that `cordova-hcp-oss` detected your changes, executed `build` command and sent notification via socket to the connected users.
 
 5. On the mobile side plugin captures `new release` event through the socket and loads it from the server.
 
@@ -203,10 +203,10 @@ How it works:
 #### Login command
 
 ```sh
-cordova-hcp login
+cordova-hcp-oss login
 ```
 
-Command requests and saves login credentials, using which deployment on the Amazon servers is performed. You need to run it before doing any deployment. Otherwise, `cordova-hcp` won't now how to login to the Amazon.
+Command requests and saves login credentials, using which deployment on the Amazon servers is performed. You need to run it before doing any deployment. Otherwise, `cordova-hcp-oss` won't now how to login to the Amazon.
 
 When executed, you will be asked to enter your Amazon `Access Key Id` and `Access Key Secret`:
 ```
@@ -233,7 +233,7 @@ echo '.chcplogin' >> .gitignore
 #### Deploy command
 
 ```sh
-cordova-hcp deploy [www_directory]
+cordova-hcp-oss deploy [www_directory]
 ```
 
 where:
@@ -261,9 +261,9 @@ As a result - all files from your web directory are uploaded to the Amazon serve
 
 ### Default configuration file
 
-As mentioned in [Init command](#init-command) section of the readme - after executing `cordova-hcp init` command you will get a default configuration file, called `cordova-hcp.json`. It is created in the root folder of your project. When you run `cordova-hcp build` - data from that file is used to generate `chcp.json` file in `www` folder.
+As mentioned in [Init command](#init-command) section of the readme - after executing `cordova-hcp-oss init` command you will get a default configuration file, called `cordova-hcp-oss.json`. It is created in the root folder of your project. When you run `cordova-hcp-oss build` - data from that file is used to generate `chcp.json` file in `www` folder.
 
-If you want - you can create `cordova-hcp.json` manually and put in there any options you want. It's just a JSON object like so:
+If you want - you can create `cordova-hcp-oss.json` manually and put in there any options you want. It's just a JSON object like so:
 ```json
 {
   "update": "start",
@@ -309,22 +309,22 @@ images/*
 
 1. Initialize:
   ```sh
-  cordova-hcp init
+  cordova-hcp-oss init
   ```
 
 2. Provide login preferences:
   ```sh
-  cordova-hcp login
+  cordova-hcp-oss login
   ```
 
 3. Build your project:
   ```sh
-  cordova-hcp build
+  cordova-hcp-oss build
   ```
 
 4. Upload project on the server:
   ```sh
-  cordova-hcp deploy
+  cordova-hcp-oss deploy
   ```
 
 5. When new version is ready - repeat steps `3.` and `4.`.
@@ -333,7 +333,7 @@ images/*
 
 1. Run server:
   ```sh
-  cordova-hcp server
+  cordova-hcp-oss server
   ```
 
 2. Run application:
